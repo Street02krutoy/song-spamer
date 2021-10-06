@@ -107,13 +107,10 @@ def Main():
     global hashSong, timeToSleep
     getSongs(settings["file"])
     print("Начинаю печатать ...")
-    time.sleep(3)
+    time.sleep(settings["start-latency"])
     for i in hashSong:
         printText(i)
-        if not settings["slowmode"] == 0:
-            time.sleep(timeToSleep)
-        else:
-            time.sleep(timeToSleep)
+        time.sleep(timeToSleep)
     print("Закончил писать")
 
 
