@@ -1,2 +1,2 @@
 # song-spamer
-[Автор этого чуда](https://github.com/te4hnoplus)
+[Автор, написавший 99% этого кода](https://github.com/te4hnoplus)
