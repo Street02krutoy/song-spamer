@@ -111,7 +111,7 @@ def Main():
     for i in hashSong:
         printText(i)
         time.sleep(timeToSleep)
-    print("Закончил писать")
+    print("Закончил писать ...")
 
 
 Main()
