@@ -3,38 +3,42 @@ from re import T
 import time
 import pyperclip
 import keyboard
-from config import settings
 
-# Minecraft Module
 note = "♪ "
 badSimvols = [".", ",", ":", ";", "!", "?", "ь", "\n", "-", " "]
 hashStrings = ["", "", ""]
 hashSong = []
-if not settings["slowmode"] == 0:
-    timeToSleep = settings["slowmode"] + 2
-else:
-    timeToSleep = settings["no-slowmode"]
 
+class configProvider(object):
+    def __init__(self, patch):
+        self.configFile = open(patch, "r", encoding="utf-8")
 
+        values = dict()
+
+        lines = self.configFile.readlines()
+        
+        for line in lines:
+            if not ("#" in line):
+                valuesOfString = line.replace("\n", "").split(":")
+                
+                startPos = valuesOfString[1].find('"')+1
+                lastPos = valuesOfString[1].rfind('"')
+
+                if(startPos>-1 and lastPos>-1 and lastPos != startPos):
+                    value = valuesOfString[1][startPos:lastPos]
+                else:
+                    value = valuesOfString[1]
+
+                values[valuesOfString[0]] = value
+                
+        self.values = values
+        
 class DiscordModule(object):
     def __init__(self) -> None:
         super().__init__()
 
     def script(self, st):
         return st
-
-
-class MinecraftModule(object):
-    mode_global = True
-
-    def __init__(self, mode_global):
-        self.mode_global = mode_global
-
-    def script():
-        keyboard.press_and_release("t")
-        time.sleep(0.1)
-        keyboard.press_and_release("shift + 1")
-
 
 def printText(text):
     pyperclip.copy(text)
@@ -89,8 +93,7 @@ def getSongs(patch):
     strings = file.readlines()
     file.close()
 
-    global hashSong
-    global frazaHash
+    global hashSong, frazaHash
     flag = 0
     for i in strings:
         if checkRifma(i):
@@ -102,16 +105,26 @@ def getSongs(patch):
             frazaHash = ""
             flag = 0
 
-
 def Main():
-    global hashSong, timeToSleep
-    getSongs(settings["file"])
-    print("Начинаю печатать ...")
-    time.sleep(settings["start-latency"])
-    for i in hashSong:
-        printText(i)
-        time.sleep(timeToSleep)
-    print("Закончил писать ...")
+    global hashSong, note
 
+    provider = configProvider("Spamerka.config")
+
+    cooldown = int(provider.values.get("Cooldown"))
+    note = provider.values.get("NoteSimvol")
+    songlist = provider.values.get("Files").split(";")
+
+    print("Начинаю печатать ...")
+    for song in songlist:
+        print("Start newsong")
+        getSongs(song)
+    
+        time.sleep(5)
+    
+        for i in hashSong:
+            printText(i)
+            if cooldown>0: time.sleep(cooldown)
+
+    print("Закончил писать ...")
 
 Main()
